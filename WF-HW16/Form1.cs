@@ -12,8 +12,11 @@ namespace WF_HW16
 {
     public partial class CalcForm : Form
     {
-        private string _firstVaue = "";
+        private string _firstValue = "";
+        private string _secondValue = "";
         private string _massAction = "";
+        private bool _clear = false;
+        private int _countEqualClick = 0;
 
         public CalcForm()
         {
@@ -25,12 +28,14 @@ namespace WF_HW16
         {
             if (sender is Button)
             {
-                if (textBox1.Text == "0" || textBox1.Text == "Деление на ноль невозможно")
+                if (textBox1.Text == "0" || textBox1.Text == "Деление на ноль невозможно" || _clear == true || _countEqualClick != 0)
                 {
+                    _clear = false;
                     textBox1.Text = "";
                     Button btn = (Button)sender;
                     textBox1.Text += btn.Text;
                     btn.BackColor = Color.FromArgb(65, 65, 65);
+                    _countEqualClick = 0;
                 }
                 else
                 {
@@ -44,8 +49,14 @@ namespace WF_HW16
 
         private void btn0_Click(object sender, EventArgs e)
         {
-            if (textBox1.Text != "0")
+            if (textBox1.Text != "0" && _clear == false)
             {
+                textBox1.Text += 0;
+            }
+            else if (textBox1.Text != "0" && _clear == true)
+            {
+                _clear = false;
+                textBox1.Text = "";
                 textBox1.Text += 0;
             }
 
@@ -80,13 +91,14 @@ namespace WF_HW16
 
         private void btnDivide_Click(object sender, EventArgs e)
         {
-            if (_massAction == "")
+            if (_massAction == "" || _countEqualClick != 0)
             {
-                _firstVaue = textBox1.Text;
+                _firstValue = textBox1.Text;
                 textBox1.Text = "";
                 _massAction = "/";
                 btnDivide.BackColor = Color.White;
                 btnDivide.ForeColor = Color.Orange;
+                _countEqualClick = 0;
             }
             else
             {
@@ -99,18 +111,20 @@ namespace WF_HW16
                 btnSub.ForeColor = Color.White;
                 btnSum.BackColor = Color.Orange;
                 btnSum.ForeColor = Color.White;
+                _countEqualClick = 0;
             }
         }
 
         private void btnMult_Click(object sender, EventArgs e)
         {
-            if (_massAction == "")
+            if (_massAction == "" || _countEqualClick != 0)
             {
-                _firstVaue = textBox1.Text;
+                _firstValue = textBox1.Text;
                 textBox1.Text = "";
                 _massAction = "*";
                 btnMult.BackColor = Color.White;
                 btnMult.ForeColor = Color.Orange;
+                _countEqualClick = 0;
             }
             else
             {
@@ -123,18 +137,20 @@ namespace WF_HW16
                 btnSub.ForeColor = Color.White;
                 btnSum.BackColor = Color.Orange;
                 btnSum.ForeColor = Color.White;
+                _countEqualClick = 0;
             }
         }
 
         private void btnSub_Click(object sender, EventArgs e)
         {
-            if (_massAction == "")
+            if (_massAction == "" || _countEqualClick != 0)
             {
-                _firstVaue = textBox1.Text;
+                _firstValue = textBox1.Text;
                 textBox1.Text = "";
                 _massAction = "-";
                 btnSub.BackColor = Color.White;
                 btnSub.ForeColor = Color.Orange;
+                _countEqualClick = 0;
             }
             else
             {
@@ -147,23 +163,24 @@ namespace WF_HW16
                 btnMult.ForeColor = Color.White;
                 btnSum.BackColor = Color.Orange;
                 btnSum.ForeColor = Color.White;
+                _countEqualClick = 0;
             }
 
         }
 
         private void btnSum_Click(object sender, EventArgs e)
         {
-            if (_massAction == "")
+            if (_massAction == "" || _countEqualClick != 0)
             {
-                _firstVaue = textBox1.Text;
+                _firstValue = textBox1.Text;
                 textBox1.Text = "";
                 _massAction = "+";
                 btnSum.BackColor = Color.White;
                 btnSum.ForeColor = Color.Orange;
+                _countEqualClick = 0;
             }
             else
             {
-                _massAction = "+";
                 _massAction = "+";
                 btnSum.BackColor = Color.White;
                 btnSum.ForeColor = Color.Orange;
@@ -173,37 +190,60 @@ namespace WF_HW16
                 btnMult.ForeColor = Color.White;
                 btnSub.BackColor = Color.Orange;
                 btnSub.ForeColor = Color.White;
+                _countEqualClick = 0;
             }
         }
 
         private void btnEqual_Click(object sender, EventArgs e)
-        {
-
-            switch (_massAction)
+        { 
+            if (_countEqualClick == 0)
             {
-                case "+":
-                    textBox1.Text = (Convert.ToDouble(_firstVaue) + Convert.ToDouble(textBox1.Text)).ToString();
-                    break;
-                case "-":
-                    textBox1.Text = (Convert.ToDouble(_firstVaue) - Convert.ToDouble(textBox1.Text)).ToString();
-                    break;
-                case "/":
-                    if (textBox1.Text == "0")
-                    {
-                        textBox1.Text = "Деление на ноль невозможно";
-
-                    }
-                    else
-                    {
-                        textBox1.Text = (Convert.ToDouble(_firstVaue) / Convert.ToDouble(textBox1.Text)).ToString();
-                    }
-                    break;
-                case "*":
-                    textBox1.Text = (Convert.ToDouble(_firstVaue) * Convert.ToDouble(textBox1.Text)).ToString();
-                    break;
+                _secondValue = textBox1.Text;
             }
 
-            _massAction = "";
+            if (textBox1.Text != "")
+            {
+                switch (_massAction)
+                {
+                    case "+":
+                        textBox1.Text = (Convert.ToDouble(_firstValue) + Convert.ToDouble(textBox1.Text)).ToString();
+                        _clear = true;
+                        _firstValue = _secondValue;
+                        _countEqualClick = 1;
+                        break;
+                    case "-":
+                        textBox1.Text = (Convert.ToDouble(_firstValue) - Convert.ToDouble(_secondValue)).ToString();
+                        _clear = true;
+                        _firstValue = textBox1.Text;
+                        _countEqualClick = 1;
+                        break;
+                    case "/":
+                        if (textBox1.Text == "0")
+                        {
+                            textBox1.Text = "Деление на ноль невозможно";
+                            _clear = true;
+                            _firstValue = _secondValue;
+                            _countEqualClick = 1;
+                        }
+                        else
+                        {
+                            textBox1.Text = (Convert.ToDouble(_firstValue) / Convert.ToDouble(_secondValue)).ToString();
+                            _clear = true;
+                            _firstValue = textBox1.Text;
+
+                            _countEqualClick = 1;
+                        }
+                        break;
+                    case "*":
+                        textBox1.Text = (Convert.ToDouble(_firstValue) * Convert.ToDouble(textBox1.Text)).ToString();
+                        _clear = true;
+                        _firstValue = _secondValue;
+                        _countEqualClick = 1;
+                        break;
+                }
+            }
+
+            
             btnEqual.BackColor = Color.Orange;
             btnEqual.ForeColor = Color.White;
             btnSum.BackColor = Color.Orange;
@@ -219,7 +259,18 @@ namespace WF_HW16
         private void btnCe_Click(object sender, EventArgs e)
         {
             textBox1.Text = "0";
+            _firstValue = "";
+            _massAction = "";
             btnCe.BackColor = Color.LightGray;
+            btnSum.BackColor = Color.Orange;
+            btnSum.ForeColor = Color.White;
+            btnDivide.BackColor = Color.Orange;
+            btnDivide.ForeColor = Color.White;
+            btnMult.BackColor = Color.Orange;
+            btnMult.ForeColor = Color.White;
+            btnSub.BackColor = Color.Orange;
+            btnSub.ForeColor = Color.White;
+            _countEqualClick = 0;
         }
 
         private void btn7_MouseClick(object sender, MouseEventArgs e)
